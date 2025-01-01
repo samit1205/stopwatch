@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProDigy Infotech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            position: fixed;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        nav ul li {
+            padding: 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            color: #ff6347;
+        }
+
+        section {
+            padding: 100px 20px;
+            height: 100vh;
+        }
+
+        #home {
+            background-color: #f4f4f4;
+        }
+
+        #about {
+            background-color: #e2e2e2;
+        }
+
+        #services {
+            background-color: #d0d0d0;
+        }
+
+        #contact {
+            background-color: #bebebe;
+        }
+
+        .scrolled {
+            background-color: #555 !important;
+        }
+
+        .half-circle {
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(to right, #ff6347, #ff4500);
+            border-top-left-radius: 100px;
+            border-top-right-radius: 100px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .stopwatch {
+            text-align: center;
+        }
+
+        #display {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #laps {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #laps li {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <section id="home">
+        <h1>Welcome to ProDigy Infotech</h1>
+        <div class="half-circle"></div>
+    </section>
+    <section id="about">
+        <h1>About Us</h1>
+    </section>
+    <section id="services">
+        <h1>Our Services</h1>
+    </section>
+    <section id="contact">
+        <h1>Contact Us</h1>
+    </section>
+    <div class="stopwatch">
+        <div id="display">00:00:00</div>
+        <button id="start">Start</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+        <button id="lap">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        let startTime, updatedTime, difference, tInterval, savedTime;
+        let running = false;
+        let lapCounter = 0;
+
+        const display = document.getElementById('display');
+        const startButton = document.getElementById('start');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const lapButton = document.getElementById('lap');
+        const laps = document.getElementById('laps');
+
+        startButton.addEventListener('click', start);
+        pauseButton.addEventListener('click', pause);
+        resetButton.addEventListener('click', reset);
+        lapButton.addEventListener('click', recordLap);
+
+        function start() {
+            if (!running) {
+                startTime = new Date().getTime();
+                tInterval = setInterval(getShowTime, 1);
+                running = true;
+            }
+        }
+
+        function pause() {
+            if (running) {
+                clearInterval(tInterval);
+                savedTime = difference;
+                running = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            running = false;
+            display.innerHTML = '00:00:00';
+            savedTime = 0;
+            lapCounter = 0;
+            laps.innerHTML = '';
+        }
+
+        function recordLap() {
+            if (running) {
+                lapCounter++;
+                const lapTime = display.innerHTML;
+                const lapItem = document.createElement('li');
+                lapItem.textContent = `Lap ${lapCounter}: ${lapTime}`;
+                laps.appendChild(lapItem);
+            }
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = (savedTime) ? (updatedTime - startTime + savedTime) : (updatedTime - startTime);
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            display.innerHTML = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function pad(number) {
+            return (number < 10) ? '0' + number : number;
+        }
+    </script>
+</body>
+</html>
